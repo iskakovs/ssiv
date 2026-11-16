@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2 — 2026-11-17
+
+* Citation metadata: abstract, release date, keywords and references, used by Zenodo for the archived record and DOI and by GitHub's "Cite this repository".
+
 ## 0.1.1 — 2026-11-17
 
 * README: badges, install from PyPI, links that work on the PyPI page.

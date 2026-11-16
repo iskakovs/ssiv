@@ -1,15 +1,76 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below, together with the papers whose methods you use."
 title: "ssiv: shift-share (Bartik) instrumental variables in Python"
+abstract: >-
+  ssiv implements estimation and inference for shift-share (Bartik) instrumental
+  variable designs in Python: OLS and IV regressions with exposure-robust AKM and
+  AKM0 confidence intervals (Adão, Kolesár and Morales, 2019), Rotemberg weights
+  (Goldsmith-Pinkham, Sorkin and Swift, 2020) and shock-level estimation (Borusyak,
+  Hull and Jaravel, 2022). Results are validated against the published output of the
+  R package ShiftShareSE on the Autor, Dorn and Hanson (2013) data.
 type: software
 authors:
   - family-names: Iskakov
     given-names: Serik
-version: 0.1.1
+version: 0.1.2
+date-released: 2026-11-17
 license: MIT
 repository-code: "https://github.com/iskakovs/ssiv"
+url: "https://pypi.org/project/ssiv/"
 keywords:
   - shift-share
   - Bartik instrument
   - instrumental variables
   - econometrics
+  - exposure-robust inference
+  - Rotemberg weights
+  - regional economics
+references:
+  - type: article
+    authors:
+      - family-names: Adão
+        given-names: Rodrigo
+      - family-names: Kolesár
+        given-names: Michal
+      - family-names: Morales
+        given-names: Eduardo
+    title: "Shift-Share Designs: Theory and Inference"
+    journal: "The Quarterly Journal of Economics"
+    year: 2019
+    volume: 134
+    issue: 4
+    start: 1949
+    end: 2010
+    doi: "10.1093/qje/qjz025"
+  - type: article
+    authors:
+      - family-names: Goldsmith-Pinkham
+        given-names: Paul
+      - family-names: Sorkin
+        given-names: Isaac
+      - family-names: Swift
+        given-names: Henry
+    title: "Bartik Instruments: What, When, Why, and How"
+    journal: "American Economic Review"
+    year: 2020
+    volume: 110
+    issue: 8
+    start: 2586
+    end: 2624
+    doi: "10.1257/aer.20181047"
+  - type: article
+    authors:
+      - family-names: Borusyak
+        given-names: Kirill
+      - family-names: Hull
+        given-names: Peter
+      - family-names: Jaravel
+        given-names: Xavier
+    title: "Quasi-Experimental Shift-Share Research Designs"
+    journal: "The Review of Economic Studies"
+    year: 2022
+    volume: 89
+    issue: 1
+    start: 181
+    end: 213
+    doi: "10.1093/restud/rdab030"

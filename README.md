@@ -8,7 +8,7 @@
 **Shift-share (Bartik) instrumental variables in Python**: exposure-robust inference
 (AKM / AKM0), Rotemberg weights and shock-level estimation, in one package.
 
-> Status: alpha (v0.1.1). The API may change before 1.0.
+> Status: alpha (v0.1.2). The API may change before 1.0.
 
 ## Why
 
