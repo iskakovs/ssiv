@@ -1,0 +1,4 @@
+# Normalise line endings so commits from Windows and Unix match.
+* text=auto eol=lf
+*.xlsx binary
+*.png binary

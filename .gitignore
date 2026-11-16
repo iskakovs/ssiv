@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.xlsx
+.ipynb_checkpoints/
+
+# validation data (not distributed)
+adh_data/

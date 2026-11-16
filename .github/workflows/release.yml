@@ -1,0 +1,84 @@
+name: Release
+
+# Publishing a GitHub Release (tag vX.Y.Z) uploads the package to PyPI.
+# "Run workflow" in the Actions tab can upload to TestPyPI for a trial.
+# Authentication uses PyPI trusted publishing: no passwords or tokens are stored.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Where to publish"
+        type: choice
+        options: [testpypi, pypi]
+        default: testpypi
+
+jobs:
+  build:
+    name: Build distributions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Check that the release tag matches the package version
+        if: github.event_name == 'release'
+        run: |
+          version=$(python -c "import re; print(re.search(r'\"(.+)\"', open('src/ssiv/_version.py').read()).group(1))")
+          if [ "${GITHUB_REF_NAME}" != "v${version}" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match package version v${version}"
+            exit 1
+          fi
+      - name: Build and check
+        run: |
+          pip install build twine
+          python -m build
+          twine check --strict dist/*
+      - name: Test the built wheel
+        run: |
+          python -m venv /tmp/clean
+          /tmp/clean/bin/pip install "$(ls dist/*.whl)" pytest
+          /tmp/clean/bin/python -m pytest -q -p no:cacheprovider
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish-testpypi:
+    name: Publish to TestPyPI
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/ssiv
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  publish-pypi:
+    name: Publish to PyPI
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.target == 'pypi')
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/ssiv
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

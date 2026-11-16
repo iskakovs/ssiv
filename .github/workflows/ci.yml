@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install ruff
+      - run: ruff check .
+      - run: ruff format --check .
+
+  test:
+    name: test (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -e ".[dev]"
+      - run: pytest --cov=ssiv --cov-report=term-missing
+
+  oldest-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          printf 'numpy==1.24.*\npandas==2.0.*\n' > oldest.txt
+          pip install -e ".[dev]" -c oldest.txt
+      - run: pytest
+
+  validation:
+    # Reproduce the published ShiftShareSE results on the Autor-Dorn-Hanson data.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: r-lib/actions/setup-r@v2
+      - name: Fetch ADH data
+        run: bash scripts/fetch_adh.sh "$RUNNER_TEMP/adh"
+      - run: pip install -e ".[dev]"
+      - name: Validate against ShiftShareSE
+        run: SSIV_ADH_DIR="$RUNNER_TEMP/adh" pytest -v tests/test_adh_validation.py tests/test_readme_and_example.py
+
+  installed-package:
+    name: installed package (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Build sdist and wheel
+        run: |
+          pip install build twine
+          python -m build
+          twine check --strict dist/*
+      - name: Install the wheel into a clean environment
+        run: |
+          python -m venv clean-env
+          if [ -d clean-env/bin ]; then PY=clean-env/bin/python; else PY=clean-env/Scripts/python; fi
+          echo "PY=$PY" >> "$GITHUB_ENV"
+          "$PY" -m pip install "$(ls dist/*.whl)" pytest
+      - name: Check the installed copy is used
+        run: |
+          "$PY" -c "import ssiv; assert 'site-packages' in ssiv.__file__, ssiv.__file__; print(ssiv.__version__)"
+      - name: Run tests against the installed package
+        run: '"$PY" -m pytest -p no:cacheprovider'
