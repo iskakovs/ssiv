@@ -1,9 +1,14 @@
 # ssiv
 
+[![CI](https://github.com/iskakovs/ssiv/actions/workflows/ci.yml/badge.svg)](https://github.com/iskakovs/ssiv/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/ssiv.svg)](https://pypi.org/project/ssiv/)
+[![Python](https://img.shields.io/pypi/pyversions/ssiv.svg)](https://pypi.org/project/ssiv/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/iskakovs/ssiv/blob/main/LICENSE)
+
 **Shift-share (Bartik) instrumental variables in Python**: exposure-robust inference
 (AKM / AKM0), Rotemberg weights and shock-level estimation, in one package.
 
-> Status: alpha (v0.1.0). The API may change before 1.0.
+> Status: alpha (v0.1.1). The API may change before 1.0.
 
 ## Why
 
@@ -21,9 +26,15 @@ studies. Since 2019, three papers have changed how they should be estimated and 
 
 These methods are implemented in R, Stata, MATLAB and Julia, but not in Python.
 `ssiv` brings them to Python, implemented from the papers and validated against the R
-reference implementation (see [Validation](#validation)).
+reference implementation (see Validation below).
 
 ## Install
+
+```bash
+pip install ssiv
+```
+
+The development version from GitHub:
 
 ```bash
 pip install "ssiv @ git+https://github.com/iskakovs/ssiv"
